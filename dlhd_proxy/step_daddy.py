@@ -10,16 +10,13 @@ from typing import List
 from .utils import encrypt, decrypt, urlsafe_base64, decode_bundle
 from rxconfig import config
 
-
 logger = logging.getLogger(__name__)
-
 
 class Channel(rx.Base):
     id: str
     name: str
     tags: List[str]
     logo: str
-
 
 class StepDaddy:
     def __init__(self):
@@ -47,7 +44,6 @@ class StepDaddy:
 
     async def load_channels(self):
         channels: dict[str, Channel] = {}
-
         # Load the 24/7 channels from the main page.
         try:
             response = await self._session.get(
@@ -64,18 +60,15 @@ class StepDaddy:
                 channels[ch.id] = ch
         except Exception:
             pass
-
         # Include channels referenced only in the schedule.
         try:
             schedule = await self.schedule()
-
             def iter_channels(data):
                 if isinstance(data, list):
                     return data
                 if isinstance(data, dict):
                     return list(data.values())
                 return []
-
             for day in schedule.values():
                 for events in day.values():
                     for event in events:
@@ -89,7 +82,6 @@ class StepDaddy:
                                 channels[cid] = self._channel_from_schedule(cid, name)
         except Exception:
             pass
-
         self.channels = sorted(
             channels.values(), key=lambda channel: (channel.name.startswith("18"), channel.name)
         )
@@ -120,11 +112,9 @@ class StepDaddy:
             logo = f"{config.api_url}/logo/{urlsafe_base64(logo)}"
         return Channel(id=str(channel_id), name=channel_name, tags=meta.get("tags", []), logo=logo)
 
-    # Not generic
     async def stream(self, channel_id: str):
         key = "CHANNEL_KEY"
         max_retries = 3
-
         prefixes = ["stream", "cast", "watch"]
         for prefix in prefixes:
             url = f"{self._base_url}/{prefix}/stream-{channel_id}.php"
@@ -155,7 +145,6 @@ class StepDaddy:
                     break
         else:
             raise ValueError("Failed to find source URL for channel")
-
         channel_key = re.compile(rf"const\s+{re.escape(key)}\s*=\s*\"(.*?)\";").findall(source_response.text)[-1]
         bundle = re.compile(r"const\s+XJZ\s*=\s*\"(.*?)\";").findall(source_response.text)[-1]
         data = decode_bundle(bundle)
