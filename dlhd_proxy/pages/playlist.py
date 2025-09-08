@@ -1,10 +1,13 @@
 import reflex as rx
 from rxconfig import config
 from dlhd_proxy.components import navbar
-
+from urllib.parse import urljoin  # Added for safe URL joining
 
 @rx.page("/playlist")
 def playlist() -> rx.Component:
+    # Safely join the base api_url with the path to avoid concatenation issues
+    playlist_url = urljoin(config.api_url, "/playlist.m3u8")
+
     return rx.box(
         navbar(),
         rx.container(
@@ -32,9 +35,7 @@ def playlist() -> rx.Component:
                             "dlhd-proxy allows you to watch various TV channels via IPTV. "
                             "You can download the playlist file below and use it with your favorite media player.",
                         ),
-
                         rx.divider(margin_y="1.5rem"),
-
                         rx.heading("How to Use", size="5", margin_bottom="0.5rem"),
                         rx.text(
                             "1. Copy the link below or download the playlist file",
@@ -46,19 +47,18 @@ def playlist() -> rx.Component:
                             margin_bottom="1.5rem",
                             font_weight="medium",
                         ),
-
                         rx.hstack(
                             rx.button(
                                 "Download Playlist",
                                 rx.icon("download", margin_right="0.5rem"),
-                                on_click=rx.redirect(f"{config.api_url}/playlist.m3u8", is_external=True),
+                                on_click=rx.redirect(playlist_url, is_external=True),
                                 size="3",
                             ),
                             rx.button(
                                 "Copy Link",
                                 rx.icon("clipboard", margin_right="0.5rem"),
                                 on_click=[
-                                    rx.set_clipboard(f"{config.api_url}/playlist.m3u8"),
+                                    rx.set_clipboard(playlist_url),
                                     rx.toast("Playlist URL copied to clipboard!"),
                                 ],
                                 size="3",
@@ -70,10 +70,9 @@ def playlist() -> rx.Component:
                             spacing="4",
                             margin_bottom="1rem",
                         ),
-
                         rx.box(
                             rx.text(
-                                f"{config.api_url}/playlist.m3u8",
+                                playlist_url,
                                 font_family="mono",
                                 font_size="sm",
                             ),
@@ -83,9 +82,7 @@ def playlist() -> rx.Component:
                             width="100%",
                             text_align="center",
                         ),
-
                         rx.divider(margin_y="1rem"),
-
                         rx.heading("Compatible Players", size="5", margin_bottom="1rem"),
                         rx.text(
                             "You can use the m3u8 playlist with most media players and IPTV applications:",
@@ -109,7 +106,6 @@ def playlist() -> rx.Component:
                             padding="1rem",
                             width="100%",
                         ),
-
                         rx.card(
                             rx.vstack(
                                 rx.heading("IPTVnator", size="6"),
@@ -128,7 +124,6 @@ def playlist() -> rx.Component:
                             padding="1rem",
                             width="100%",
                         ),
-
                         rx.card(
                             rx.vstack(
                                 rx.heading("Jellyfin", size="6"),
@@ -147,9 +142,7 @@ def playlist() -> rx.Component:
                             padding="1rem",
                             width="100%",
                         ),
-
                         rx.divider(margin_y="1rem"),
-
                         rx.text(
                             "Need help? Most media players allow you to open network streams or IPTV playlists. "
                             "Simply paste the m3u8 URL above or import the downloaded playlist file.",
