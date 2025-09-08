@@ -3,9 +3,9 @@ from rxconfig import config
 from dlhd_proxy import backend
 from dlhd_proxy.components import navbar, MediaPlayer
 from dlhd_proxy.step_daddy import Channel
+from urllib.parse import urljoin  # Added for safe URL joining
 
 media_player = MediaPlayer.create
-
 
 class WatchState(rx.State):
     is_loaded: bool = False
@@ -19,8 +19,8 @@ class WatchState(rx.State):
 
     @rx.var
     def url(self) -> str:
-        return f"{config.api_url}/stream/{self.channel_id}.m3u8"
-
+        # Safely join the base api_url with the path to avoid concatenation issues
+        return urljoin(config.api_url, f"/stream/{self.channel_id}.m3u8")
 
 def uri_card() -> rx.Component:
     return rx.card(
@@ -69,7 +69,6 @@ def uri_card() -> rx.Component:
         ),
         margin_top="1rem",
     )
-
 
 @rx.page("/watch/[channel_id]")
 def watch() -> rx.Component:
