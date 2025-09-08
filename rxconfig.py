@@ -7,9 +7,7 @@ socks5 = os.environ.get("SOCKS5", "")
 timezone = os.environ.get("TZ", "UTC")
 guide_update = os.environ.get("GUIDE_UPDATE", "03:00")
 
-print(
-    f"PROXY_CONTENT: {proxy_content}\nSOCKS5: {socks5}\nTZ: {timezone}\nGUIDE_UPDATE: {guide_update}"
-)
+print(f"PROXY_CONTENT: {proxy_content}\nSOCKS5: {socks5}\nTZ: {timezone}\nGUIDE_UPDATE: {guide_update}")
 
 config = rx.Config(
     app_name="dlhd_proxy",
